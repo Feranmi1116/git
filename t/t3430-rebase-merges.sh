@@ -278,6 +278,12 @@ test_expect_success 'do not rebase cousins unless asked for' '
 	EOF
 '
 
+test_expect_success '--rebase-merges="" is invalid syntax' '
+	echo "fatal: Unknown mode: " >expect &&
+	test_must_fail git rebase --rebase-merges="" HEAD^ 2>actual &&
+	test_cmp expect actual
+'
+
 test_expect_success 'refs/rewritten/* is worktree-local' '
 	git worktree add wt &&
 	cat >wt/script-from-scratch <<-\EOF &&
