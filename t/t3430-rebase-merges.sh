@@ -284,6 +284,102 @@ test_expect_success '--rebase-merges="" is invalid syntax' '
 	test_cmp expect actual
 '
 
+test_expect_success 'rebase.merges="" is equivalent to not passing --rebase-merges' '
+	test_config rebase.merges "" &&
+	git checkout -b config-merges-blank E &&
+	git rebase C &&
+	test_cmp_graph C.. <<-\EOF
+	* B
+	* D
+	o C
+	EOF
+'
+
+test_expect_success 'rebase.merges=rebase-cousins is equivalent to --rebase-merges=rebase-cousins' '
+	test_config rebase.merges rebase-cousins &&
+	git checkout -b config-rebase-cousins main &&
+	git rebase HEAD^ &&
+	test_cmp_graph HEAD^.. <<-\EOF
+	*   Merge the topic branch '\''onebranch'\''
+	|\
+	| * D
+	| * G
+	|/
+	o H
+	EOF
+'
+
+test_expect_success '--no-rebase-merges overrides rebase.merges=no-rebase-cousins' '
+	test_config rebase.merges no-rebase-cousins &&
+	git checkout -b override-config-no-rebase-cousins E &&
+	git rebase --no-rebase-merges C &&
+	test_cmp_graph C.. <<-\EOF
+	* B
+	* D
+	o C
+	EOF
+'
+
+test_expect_success '--rebase-merges=no-rebase-cousins overrides rebase.merges=rebase-cousins' '
+	test_config rebase.merges rebase-cousins &&
+	git checkout -b override-config-rebase-cousins main &&
+	git rebase --rebase-merges=no-rebase-cousins HEAD^ &&
+	test_cmp_graph HEAD^.. <<-\EOF
+	*   Merge the topic branch '\''onebranch'\''
+	|\
+	| * D
+	| * G
+	o | H
+	|/
+	o A
+	EOF
+'
+
+test_expect_success '--rebase-merges overrides rebase.merges=false' '
+	test_config rebase.merges false &&
+	git checkout -b override-config-merges-false E &&
+	before="$(git rev-parse --verify HEAD)" &&
+	test_tick &&
+	git rebase --rebase-merges C &&
+	test_cmp_rev HEAD $before
+'
+
+test_expect_success '--rebase-merges does not override rebase.merges=rebase-cousins' '
+	test_config rebase.merges rebase-cousins &&
+	git checkout -b no-override-config-rebase-cousins main &&
+	git rebase --rebase-merges HEAD^ &&
+	test_cmp_graph HEAD^.. <<-\EOF
+	*   Merge the topic branch '\''onebranch'\''
+	|\
+	| * D
+	| * G
+	|/
+	o H
+	EOF
+'
+
+test_expect_success 'local rebase.merges=false overrides global rebase.merges=true' '
+	test_config_global rebase.merges true &&
+	test_config rebase.merges false &&
+	git checkout -b override-global-config E &&
+	git rebase C &&
+	test_cmp_graph C.. <<-\EOF
+	* B
+	* D
+	o C
+	EOF
+'
+
+test_expect_success 'local rebase.merges="" does not override global rebase.merges=true' '
+	test_config_global rebase.merges no-rebase-cousins &&
+	test_config rebase.merges "" &&
+	git checkout -b no-override-global-config E &&
+	before="$(git rev-parse --verify HEAD)" &&
+	test_tick &&
+	git rebase C &&
+	test_cmp_rev HEAD $before
+'
+
 test_expect_success 'refs/rewritten/* is worktree-local' '
 	git worktree add wt &&
 	cat >wt/script-from-scratch <<-\EOF &&
