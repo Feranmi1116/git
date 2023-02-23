@@ -14,20 +14,20 @@ skip_all_if_no_Test_More
 # set up test repository
 
 test_expect_success 'set up test repository' '
-	echo "test file 1" > file1 &&
-	echo "test file 2" > file2 &&
+	echo "test file 1" >file1 &&
+	echo "test file 2" >file2 &&
 	mkdir directory1 &&
-	echo "in directory1" >> directory1/file &&
+	echo "in directory1" >>directory1/file &&
 	mkdir directory2 &&
-	echo "in directory2" >> directory2/file &&
+	echo "in directory2" >>directory2/file &&
 	git add . &&
 	git commit -m "first commit" &&
 
-	echo "new file in subdir 2" > directory2/file2 &&
+	echo "new file in subdir 2" >directory2/file2 &&
 	git add . &&
 	git commit -m "commit in directory2" &&
 
-	echo "changed file 1" > file1 &&
+	echo "changed file 1" >file1 &&
 	git commit -a -m "second commit" &&
 
 	git config --add color.test.slot1 green &&
