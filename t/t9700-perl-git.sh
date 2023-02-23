@@ -13,9 +13,8 @@ skip_all_if_no_Test_More
 
 # set up test repository
 
-test_expect_success \
-    'set up test repository' \
-    'echo "test file 1" > file1 &&
+test_expect_success 'set up test repository' '
+     echo "test file 1" > file1 &&
      echo "test file 2" > file2 &&
      mkdir directory1 &&
      echo "in directory1" >> directory1/file &&
