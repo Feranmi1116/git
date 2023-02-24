@@ -1,4 +1,5 @@
 #include "cache.h"
+#include "hex.h"
 #include "config.h"
 #include "strbuf.h"
 #include "fsmonitor.h"

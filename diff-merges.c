@@ -1,5 +1,7 @@
+#include "git-compat-util.h"
 #include "diff-merges.h"
 
+#include "gettext.h"
 #include "revision.h"
 #include "strbuf.h"
 
